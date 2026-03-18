@@ -1,17 +1,41 @@
-import { Routes, Route, Link } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 
-const Field = ({ label, placeholder, type = 'text' }) => (
-  <label className="field">
-    <span className="field-label">{label}</span>
-    <input type={type} placeholder={placeholder} />
-  </label>
-)
+const defaultProfile = {
+  fullName: 'Marry Doe',
+  phone: '',
+  email: 'Marry@Gmail.Com',
+  password: '',
+  company: '',
+  isAgency: 'yes',
+  bio:
+    'Lorem Ipsum Dolor Sit Amet, Consetetur Sadipscing Elitr, Sed Diam Nonumy Eirmod Tempor Invidunt Ut Labore Et Dolore Magna Aliquyam Erat, Sed Diam',
+}
 
-const PrimaryButton = ({ children, className = '', muted = false }) => (
-  <button className={`btn ${muted ? 'btn-muted' : 'btn-primary'} ${className}`.trim()}>
-    {children}
-  </button>
-)
+function Field({ label, value, onChange, placeholder, type = 'text', name }) {
+  return (
+    <label className="field">
+      <span className="field-label">{label}</span>
+      <input
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        autoComplete="off"
+        required
+      />
+    </label>
+  )
+}
+
+function PrimaryButton({ children, className = '', muted = false, type = 'button' }) {
+  return (
+    <button type={type} className={`btn ${muted ? 'btn-muted' : 'btn-primary'} ${className}`.trim()}>
+      {children}
+    </button>
+  )
+}
 
 function PhoneShell({ children, padded = true }) {
   return (
@@ -33,8 +57,12 @@ function WelcomePage() {
             consectetur adipiscing elit,
           </p>
           <div className="stack">
-            <Link to="/register"><PrimaryButton>Create Account</PrimaryButton></Link>
-            <Link to="/login"><PrimaryButton muted>Already Registered? Login</PrimaryButton></Link>
+            <Link to="/register">
+              <PrimaryButton>Create Account</PrimaryButton>
+            </Link>
+            <Link to="/login">
+              <PrimaryButton muted>Already Registered? Login</PrimaryButton>
+            </Link>
           </div>
         </div>
       </div>
@@ -42,49 +70,112 @@ function WelcomePage() {
   )
 }
 
-function LoginPage() {
+function LoginPage({ profile, setProfile }) {
+  const navigate = useNavigate()
+  const [form, setForm] = useState({
+    email: profile.email === defaultProfile.email ? '' : profile.email,
+    password: profile.password,
+  })
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setForm((current) => ({ ...current, [name]: value }))
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
+    setProfile((current) => ({
+      ...current,
+      email: form.email || current.email,
+      password: form.password || current.password,
+    }))
+
+    navigate('/account')
+  }
+
   return (
     <PhoneShell>
-      <div className="form-screen narrow">
-        <h1>Signin to your<br />PopX account</h1>
+      <form className="form-screen narrow" onSubmit={handleSubmit}>
+        <h1>
+          Signin to your<br />PopX account
+        </h1>
         <p>
           Lorem ipsum dolor sit amet,<br />
           consectetur adipiscing elit,
         </p>
 
         <div className="stack form-gap top-gap">
-          <Field label="Email Address" placeholder="Enter email address" />
-          <Field label="Password" placeholder="Enter password" type="password" />
-          <Link to="/account"><PrimaryButton className="disabled-look">Login</PrimaryButton></Link>
+          <Field
+            label="Email Address"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="Enter email address"
+          />
+          <Field
+            label="Password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            placeholder="Enter password"
+            type="password"
+          />
+          <PrimaryButton className="disabled-look" type="submit">
+            Login
+          </PrimaryButton>
         </div>
-      </div>
+      </form>
     </PhoneShell>
   )
 }
 
-function RegisterPage() {
+function RegisterPage({ setProfile }) {
+  const navigate = useNavigate()
+  const [form, setForm] = useState({
+    fullName: '',
+    phone: '',
+    email: '',
+    password: '',
+    company: '',
+    isAgency: 'yes',
+  })
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setForm((current) => ({ ...current, [name]: value }))
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    setProfile((current) => ({ ...current, ...form }))
+    navigate('/account')
+  }
+
   return (
     <PhoneShell>
-      <div className="form-screen register-screen">
-        <h1>Create your<br />PopX account</h1>
+      <form className="form-screen register-screen" onSubmit={handleSubmit}>
+        <h1>
+          Create your<br />PopX account
+        </h1>
 
         <div className="stack form-gap slightly-top-gap">
-          <Field label="Full Name*" placeholder="Marry Doe" />
-          <Field label="Phone number*" placeholder="Marry Doe" />
-          <Field label="Email address*" placeholder="Marry Doe" />
-          <Field label="Password *" placeholder="Marry Doe" type="password" />
-          <Field label="Company name" placeholder="Marry Doe" />
+          <Field label="Full Name*" name="fullName" value={form.fullName} onChange={handleChange} placeholder="Marry Doe" required/>
+          <Field label="Phone number*" name="phone" value={form.phone} onChange={handleChange} placeholder="Marry Doe" required />
+          <Field label="Email address*" name="email" value={form.email} onChange={handleChange} placeholder="Marry Doe" required/>
+          <Field label="Password *" name="password" value={form.password} onChange={handleChange} placeholder="Marry Doe" type="password" />
+          <Field label="Company name" name="company" value={form.company} onChange={handleChange} placeholder="Marry Doe" required/>
 
           <div className="radio-group">
             <p>Are you an Agency?*</p>
             <div className="radio-row">
               <label className="radio-option">
-                <input type="radio" name="agency" defaultChecked />
+                <input type="radio" name="isAgency" value="yes" checked={form.isAgency === 'yes'} onChange={handleChange} />
                 <span className="radio-ui"></span>
                 <span>Yes</span>
               </label>
               <label className="radio-option">
-                <input type="radio" name="agency" />
+                <input type="radio" name="isAgency" value="no" checked={form.isAgency === 'no'} onChange={handleChange} />
                 <span className="radio-ui"></span>
                 <span>No</span>
               </label>
@@ -92,15 +183,26 @@ function RegisterPage() {
           </div>
         </div>
 
-        <Link to="/account" className="bottom-cta">
-          <PrimaryButton>Create Account</PrimaryButton>
-        </Link>
-      </div>
+        <div className="bottom-cta">
+          <PrimaryButton type="submit">Create Account</PrimaryButton>
+        </div>
+      </form>
     </PhoneShell>
   )
 }
 
-function AccountPage() {
+function AccountPage({ profile }) {
+  const initials = useMemo(() => {
+    const name = profile.fullName?.trim()
+    if (!name) return 'MD'
+
+    return name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join('')
+  }, [profile.fullName])
+
   return (
     <PhoneShell padded={false}>
       <div className="account-page">
@@ -108,20 +210,17 @@ function AccountPage() {
 
         <section className="profile-card">
           <div className="avatar-wrap">
-            <div className="avatar">MD</div>
+            <div className="avatar">{initials}</div>
             <div className="camera-badge">📷</div>
           </div>
 
           <div className="profile-meta">
-            <h3>Marry Doe</h3>
-            <p>Marry@Gmail.Com</p>
+            <h3>{profile.fullName || 'Marry Doe'}</h3>
+            <p>{profile.email || 'Marry@Gmail.Com'}</p>
           </div>
         </section>
 
-        <section className="bio-copy">
-          Lorem Ipsum Dolor Sit Amet, Consetetur Sadipscing Elitr, Sed Diam Nonumy Eirmod Tempor Invidunt Ut
-          Labore Et Dolore Magna Aliquyam Erat, Sed Diam
-        </section>
+        <section className="bio-copy">{profile.bio}</section>
 
         <div className="divider dashed" />
       </div>
@@ -130,12 +229,14 @@ function AccountPage() {
 }
 
 export default function App() {
+  const [profile, setProfile] = useState(defaultProfile)
+
   return (
     <Routes>
       <Route path="/" element={<WelcomePage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/account" element={<AccountPage />} />
+      <Route path="/login" element={<LoginPage profile={profile} setProfile={setProfile} />} />
+      <Route path="/register" element={<RegisterPage setProfile={setProfile} />} />
+      <Route path="/account" element={<AccountPage profile={profile} />} />
     </Routes>
   )
 }
