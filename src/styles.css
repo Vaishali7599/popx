@@ -140,6 +140,7 @@ p {
   color: #ffffff;
   box-shadow: none;
 }
+
 .disabled-look:hover {
     background-color: blue;
     color: white;
