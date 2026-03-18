@@ -191,9 +191,9 @@ function RegisterPage({ setProfile }) {
   )
 }
 
-
 function AccountPage({ profile, setProfile }) {
   const navigate = useNavigate()
+
   const initials = useMemo(() => {
     const name = profile.fullName?.trim()
     if (!name) return 'MD'
@@ -205,7 +205,7 @@ function AccountPage({ profile, setProfile }) {
       .join('')
   }, [profile.fullName])
 
-    const handleLogout = () => {
+  const handleLogout = () => {
     setProfile(defaultProfile)
     navigate('/')
   }
@@ -248,7 +248,7 @@ export default function App() {
       <Route path="/" element={<WelcomePage />} />
       <Route path="/login" element={<LoginPage profile={profile} setProfile={setProfile} />} />
       <Route path="/register" element={<RegisterPage setProfile={setProfile} />} />
-      <Route path="/account" element={<AccountPage profile={profile} />} />
+      <Route path="/account" element={<AccountPage profile={profile} setProfile={setProfile} />} />
     </Routes>
   )
 }
