@@ -183,9 +183,22 @@ p {
   color: #414141;
 }
 
+.field input[aria-invalid='true'] {
+  border-color: #db4c67;
+}
+
 .field input::placeholder {
   color: #a2a2a2;
   font-weight: 500;
+}
+
+.field-error {
+  display: block;
+  margin-top: 6px;
+  padding-left: 2px;
+  color: #db4c67;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .register-screen {
