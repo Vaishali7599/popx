@@ -191,7 +191,9 @@ function RegisterPage({ setProfile }) {
   )
 }
 
-function AccountPage({ profile }) {
+
+function AccountPage({ profile, setProfile }) {
+  const navigate = useNavigate()
   const initials = useMemo(() => {
     const name = profile.fullName?.trim()
     if (!name) return 'MD'
@@ -203,10 +205,20 @@ function AccountPage({ profile }) {
       .join('')
   }, [profile.fullName])
 
+    const handleLogout = () => {
+    setProfile(defaultProfile)
+    navigate('/')
+  }
+
   return (
     <PhoneShell padded={false}>
       <div className="account-page">
-        <header className="topbar">Account Settings</header>
+        <header className="topbar">
+          <span>Account Settings</span>
+          <button type="button" className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </header>
 
         <section className="profile-card">
           <div className="avatar-wrap">

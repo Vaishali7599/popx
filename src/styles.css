@@ -258,6 +258,7 @@ p {
   height: 60px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 16px;
   background: #ffffff;
   color: #444;
@@ -265,6 +266,23 @@ p {
   font-weight: 700;
   border-bottom: 1px solid #e5e5e5;
   flex-shrink: 0;
+}
+
+.logout-button {
+  border: 1px solid #d6d1e2;
+  background: #f4efff;
+  color: #5f35cb;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.logout-button:hover {
+  background: #ebe2ff;
+  transform: translateY(-1px);
 }
 
 .profile-card {
